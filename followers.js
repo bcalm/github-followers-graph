@@ -54,8 +54,30 @@ const getFollowers = async function (src, level) {
   return graph;
 };
 
-const main = function (src, dest, level) {
-  getFollowers(src, level).then((graph) => console.log(Object.keys(graph)));
+const findShortestPathDFS = (graph, source, target, visited = new Set()) => {
+  visited.add(source);
+  const neighbors = graph[source] ? graph[source] : [];
+  const paths = [];
+  for (const node of neighbors) {
+    if (node === target) {
+      return [source, target];
+    }
+    if (!visited.has(node)) {
+      const path = findShortestPathDFS(graph, node, target, visited);
+      if (path) paths.push([source, ...path]);
+    }
+  }
+
+  if (paths.length > 0) {
+    return paths.reduce((path1, path2) => (path1.length <= path2.length ? path1 : path2));
+  }
+  return null;
 };
 
-main('bcalm', 'mildshower', 2);
+const main = async function (src, target, level) {
+  const graph = await getFollowers(src, level);
+  const shortestPath = findShortestPathDFS(graph, src, target);
+  console.log(shortestPath);
+};
+
+main('bcalm', 'MahaVadeghar', 2);
