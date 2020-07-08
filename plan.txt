@@ -1,0 +1,5 @@
+server  queueBroker  worker
+
+server -> /findConnection/user1/user2/depth
+       -> /displayFollower/user/depth
+
