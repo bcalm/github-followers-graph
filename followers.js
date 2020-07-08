@@ -54,7 +54,7 @@ const getFollowers = async function (src, level) {
   return graph;
 };
 
-const findShortestPathDFS = (graph, source, target, visited = new Set()) => {
+const __findShortestPathDFS = (graph, source, target, visited = new Set()) => {
   visited.add(source);
   const neighbors = graph[source] ? graph[source] : [];
   const paths = [];
@@ -63,7 +63,7 @@ const findShortestPathDFS = (graph, source, target, visited = new Set()) => {
       return [source, target];
     }
     if (!visited.has(node)) {
-      const path = findShortestPathDFS(graph, node, target, visited);
+      const path = __findShortestPathDFS(graph, node, target, visited);
       if (path) paths.push([source, ...path]);
     }
   }
@@ -74,10 +74,9 @@ const findShortestPathDFS = (graph, source, target, visited = new Set()) => {
   return null;
 };
 
-const main = async function (src, target, level) {
+const getShortestPath = async (src, target, level) => {
   const graph = await getFollowers(src, level);
-  const shortestPath = findShortestPathDFS(graph, src, target);
-  console.log(shortestPath);
+  return __findShortestPathDFS(graph, src, target);
 };
 
-main('bcalm', 'MahaVadeghar', 2);
+module.exports = { getShortestPath };

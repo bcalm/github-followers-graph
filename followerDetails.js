@@ -33,4 +33,17 @@ const get = (client, id) => {
   });
 };
 
-module.exports = { addDetails, get };
+const completeProcessing = (client, id, path) => {
+  const statusDetails = ['status', 'completed'];
+  const completionDetails = ['completedAt', new Date()];
+  const shortestPath = ['connection', `${path}`];
+  const details = statusDetails.concat(shortestPath, completionDetails);
+  return new Promise((resolve, rej) => {
+    client.hmset(`job_${id}`, details, (err, res) => {
+      console.log(err, res);
+      resolve(res);
+    });
+  });
+};
+
+module.exports = { addDetails, completeProcessing, get };

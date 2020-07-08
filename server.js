@@ -11,10 +11,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/findConnection/:src/:target/:depth', (req, res) => {
-  console.log(req.params);
+app.get('/status/:id', (req, res) => {
+  followerDetails.get(redisClient, req.params.id).then((status) => {
+    res.send(status);
+    res.end();
+  });
+});
+
+app.post('/findConnection/:src/:target/:level', (req, res) => {
   followerDetails.addDetails(redisClient, req.params).then((job) => {
-    console.log(job);
     redisClient.rpush('queue', job.id, (err, res) => {
       console.log('Added to the queue', job.id);
     });
