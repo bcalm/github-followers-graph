@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const followerDetails = require('./followerDetails');
+const followerDetails = require('./lib/followerDetails');
 const port = process.env.port || 8080;
 const redis = require('redis');
 
@@ -23,7 +23,7 @@ app.post('/findConnection/:src/:target/:level', (req, res) => {
     redisClient.rpush('queue', job.id, (err, res) => {
       console.log('Added to the queue', job.id);
     });
-    res.send(`${job.id}`);
+    res.send(`{id: ${job.id}}\n`);
     res.end();
   });
 });
