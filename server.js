@@ -18,9 +18,19 @@ app.get('/status/:id', (req, res) => {
   });
 });
 
+app.post('/traverse/:traversalBy/:src/:level', (req, res) => {
+  followerDetails.addDetails(redisClient, req.params).then((job) => {
+    redisClient.rpush(`${req.params.traversalBy}Queue`, job.id, (err, res) => {
+      console.log('Added to the queue', job.id);
+    });
+    res.send(`{id: ${job.id}}\n`);
+    res.end();
+  });
+});
+
 app.post('/findConnection/:src/:target/:level', (req, res) => {
   followerDetails.addDetails(redisClient, req.params).then((job) => {
-    redisClient.rpush('queue', job.id, (err, res) => {
+    redisClient.rpush('shortestPathQueue', job.id, (err, res) => {
       console.log('Added to the queue', job.id);
     });
     res.send(`{id: ${job.id}}\n`);
