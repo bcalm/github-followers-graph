@@ -1,5 +1,6 @@
 const http = require('http');
 const vorpal = require('vorpal')();
+const prompts = require('./prompt');
 
 const getServerOptions = (method) => ({
   host: 'localhost',
@@ -22,31 +23,58 @@ const sendRequest = (path, method) => {
   });
 };
 
-vorpal
-  .command('shortest-path <src> <target> <level>')
-  .description('find the path between two users')
-  .autocomplete(['src', 'target', 'level'])
-  .alias('sp')
-  .action((args, cb) => {
-    const { src, target, level } = args;
-    const path = `/findConnection/${src}/${target}/${level}`;
-    sendRequest(path, 'POST').then((res) => {
-      console.log(res);
-      cb();
-    });
-  });
-
-vorpal
-  .command('status <jobId>')
-  .description('for checking the current status of a job')
-  .autocomplete(['jobId'])
-  .action((args, cb) => {
-    const { jobId } = args;
-    const path = `/status/${jobId}`;
-    sendRequest(path, 'GET').then((res) => {
-      console.table(JSON.parse(res));
-      cb();
-    });
-  });
-
 vorpal.delimiter('github-follower$').show();
+
+vorpal
+  .command('shortest-path')
+  .description('find the path between two users')
+  .alias('sp')
+  .action(function (argument, callback) {
+    this.prompt(prompts.shortestPath).then((details) => {
+      const { src, target, level } = details;
+      const path = `/findConnection/${src}/${target}/${level}`;
+      sendRequest(path, 'POST').then((res) => {
+        console.log(res);
+        callback();
+      });
+    });
+  });
+
+vorpal
+  .command('status')
+  .description('for checking the current status of a job')
+  .action(function (argument, callback) {
+    this.prompt(prompts.status).then((details) => {
+      const { jobId } = details;
+      const path = `/status/${jobId}`;
+      sendRequest(path, 'GET').then((res) => {
+        res = JSON.parse(res);
+        if (res.connection) {
+          res.connection = res.connection.split(',').join(' -> ');
+          console.log(res.connection);
+        } else {
+          console.log(res.status, '\r\n');
+        }
+        callback();
+      });
+    });
+  });
+
+vorpal
+  .command('traverse')
+  .description('for traversing on all the followers of any user')
+  .action(function (argument, callback) {
+    this.prompt(prompts.traverse).then((details) => {
+      const { src, level, traverseBy } = details;
+      const lookup = {
+        'Breadth-first-traversal': 'BFT',
+        'Depth-first-traversal': 'DFT',
+      };
+      const traversalMethod = lookup[traverseBy];
+      const path = `/traverse/${traversalMethod}/${src}/${level}`;
+      sendRequest(path, 'post').then((res) => {
+        console.log(res);
+        callback();
+      });
+    });
+  });
