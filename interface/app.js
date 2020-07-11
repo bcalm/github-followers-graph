@@ -26,11 +26,11 @@ const sendRequest = (path, method) => {
 vorpal.delimiter('github-follower$').show();
 
 vorpal
-  .command('shortest-path')
-  .description('find the path between two users')
-  .alias('sp')
+  .command('shortest-connection')
+  .description('find the connection between two users')
+  .alias('sc')
   .action(function (argument, callback) {
-    this.prompt(prompts.shortestPath).then((details) => {
+    this.prompt(prompts.shortestConnection).then((details) => {
       const { src, target, level } = details;
       const path = `/findConnection/${src}/${target}/${level}`;
       sendRequest(path, 'POST').then((res) => {
@@ -61,10 +61,10 @@ vorpal
   });
 
 vorpal
-  .command('traverse')
+  .command('followers')
   .description('for traversing on all the followers of any user')
   .action(function (argument, callback) {
-    this.prompt(prompts.traverse).then((details) => {
+    this.prompt(prompts.followers).then((details) => {
       const { src, level, traverseBy } = details;
       const lookup = {
         'Breadth-first-traversal': 'BFT',

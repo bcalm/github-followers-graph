@@ -1,4 +1,4 @@
-const traverse = [
+const followers = [
   {
     name: 'traverseBy',
     choices: ['Breadth-first-traversal', 'Depth-first-traversal'],
@@ -20,7 +20,7 @@ const traverse = [
   },
 ];
 
-const shortestPath = [
+const shortestConnection = [
   {
     name: 'src',
     message: 'Enter src:  ',
@@ -50,4 +50,4 @@ const status = [
   },
 ];
 
-module.exports = { shortestPath, traverse, status };
+module.exports = { shortestConnection, followers, status };
